@@ -6,7 +6,7 @@ import {
   getTeamsAndKeywords,
 } from "./upstash";
 import { equalsIgnoreOrder, postScanner } from "./helpers";
-import { sendSlackMessage } from "./slack";
+import { sendDiscordMessage } from "./discord";
 
 export async function cron() {
   // last checked post id from redis, latest post id from hacker news
@@ -21,6 +21,7 @@ export async function cron() {
   }
 
   const teamsAndKeywords = await getTeamsAndKeywords(); // get all team keys from redis
+
   const scanner = postScanner(teamsAndKeywords); // create a post scanner that contains all teams and their keywords in a constructed regex
 
   let results: {
@@ -47,7 +48,7 @@ export async function cron() {
         interestedTeams.map(async (teamId) => {
           console.log("sending post to team", teamId);
           try {
-            await sendSlackMessage(i, teamId); // send post to team
+            await sendDiscordMessage(i); // send post to team
           } catch (e) {
             console.log(
               `Error sending post ${i} to team ${teamId}. Cause of error: ${e}`
@@ -65,9 +66,8 @@ export async function cron() {
 
   await setLastCheckedId(latestPostId); // set last checked post id in redis
   return {
-    summary: `Processed post ${lastCheckedId} to post ${latestPostId} (${
-      latestPostId - lastCheckedId
-    } posts)`,
+    summary: `Processed post ${lastCheckedId} to post ${latestPostId} (${latestPostId - lastCheckedId
+      } posts)`,
     results,
     errors,
   };
