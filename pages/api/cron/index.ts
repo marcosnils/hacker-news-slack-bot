@@ -3,7 +3,9 @@ import { cron } from "@/lib/cron";
 import { isDuplicateCron, redisClient } from "@/lib/upstash";
 
 export default async function handler(_req: NextApiRequest, res: NextApiResponse) {
-  await redisClient.connect();
+  if (!redisClient.isReady) {
+    await redisClient.connect();
+  }
   if (await isDuplicateCron()) {
     // check if this is a duplicate cron job (threshold of 5s)
     return res.status(500).json({ message: "Duplicate cron job" });

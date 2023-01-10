@@ -79,7 +79,7 @@ export async function setChannel(teamId: string, channel: string) {
 
 export async function getLastCheckedId(): Promise<number> {
   /* Get the last checked post ID from redis */
-  const lastCheckedId = (new Number(await redis.get("lastCheckedId"))) as number;
+  const lastCheckedId = parseInt(await redis.get("lastCheckedId") || "");
   if (!lastCheckedId) {
     // if lastCheckedId is not set (first time running), return the latest post ID on HN instead
     const latestPostId = await getLatestPost();
