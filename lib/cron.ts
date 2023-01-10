@@ -15,6 +15,7 @@ export async function cron() {
     getLatestPost(),
   ]);
 
+
   if (latestPostId === lastCheckedId) {
     // if latest post id is the same as last checked id, do nothing
     return { results: "No new posts" };

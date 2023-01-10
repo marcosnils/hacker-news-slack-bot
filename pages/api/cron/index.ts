@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { cron } from "@/lib/cron";
-import { log } from "@/lib/slack";
-import { isDuplicateCron } from "@/lib/upstash";
+import { isDuplicateCron, redisClient } from "@/lib/upstash";
 
 export default async function handler(_req: NextApiRequest, res: NextApiResponse) {
+  await redisClient.connect();
   if (await isDuplicateCron()) {
     // check if this is a duplicate cron job (threshold of 5s)
     return res.status(500).json({ message: "Duplicate cron job" });
@@ -14,7 +14,6 @@ export default async function handler(_req: NextApiRequest, res: NextApiResponse
     res.status(200).json(response);
   } catch (err) {
     console.log("Cron job error:", err);
-    await log("Cron job error: \n" + "```" + JSON.stringify(err) + "```");
     res.status(500).json({ statusCode: 500, message: err });
   }
 }

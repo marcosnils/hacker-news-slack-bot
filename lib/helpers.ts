@@ -36,6 +36,7 @@ export function postScanner(teamsAndKeywords: TeamAndKeywords) {
     }
   }
 
+
   const keywordArray = Array.from(keywords) as string[];
   const boundaries = keywordArray.map(
     (keyword) => `\\b${regexEscape(keyword)}\\b`
