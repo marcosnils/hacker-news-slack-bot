@@ -16,6 +16,8 @@ export async function cron() {
   ]);
 
 
+  console.log(`last checkedId: ${lastCheckedId}`);
+
   if (latestPostId === lastCheckedId) {
     // if latest post id is the same as last checked id, do nothing
     return { results: "No new posts" };
@@ -31,7 +33,8 @@ export async function cron() {
   let errors: any[] = [];
 
   for (let i = lastCheckedId + 1; i <= latestPostId; i++) {
-    if (await checkIfPostWasChecked(i)) continue; // avoid double checking posts
+    console.log(`starting to process post: ${i}`);
+    if (await checkIfPostWasChecked(i)) continue;
 
     const post = await getPost(i); // get post from hacker news
     if (!post) {
